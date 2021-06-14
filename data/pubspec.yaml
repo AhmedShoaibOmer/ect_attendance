@@ -24,6 +24,9 @@ dependencies:
 
   # local data persistence
   shared_preferences: ^2.0.3
+
+  excel: ^1.1.5
+  path: ^1.7.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -24,7 +24,7 @@ class AuthenticationRepositoryImpl extends AuthenticationRepository {
     final currentUserId = preferences.currentUserId;
 
     // null if there's no user authenticated.
-    if (currentUserId == null) {
+    if (currentUserId == null || currentUserId.isEmpty) {
       yield UserEntity.empty;
     } else {
       _firestoreService.getUser();
@@ -62,7 +62,7 @@ class AuthenticationRepositoryImpl extends AuthenticationRepository {
   Future<Either<Failure, void>> logOutUser() async {
     try {
       final preferences = await SharedPreferencesService.instance;
-      await preferences.setCurrentUserId(null);
+      await preferences.setCurrentUserId('');
       _firestoreService.userLoggedOut();
       await FirebaseAuth.instance.signOut();
       return Right(() {});

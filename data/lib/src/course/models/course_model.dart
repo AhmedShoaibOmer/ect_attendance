@@ -7,15 +7,17 @@ part 'course_model.g.dart';
 @JsonSerializable()
 class Course extends CourseEntity {
   Course({
-    String name,
-    String semester,
-    List<String> lecturesIds,
+    @required String name,
+    @required String semester,
     @required this.id,
+    @required String teacherId,
+    @required List<String> studentsIds,
   }) : super(
-          id: id,
+    id: id,
           name: name,
           semester: semester,
-          lecturesIds: lecturesIds,
+          teacherId: teacherId,
+          studentsIds: studentsIds,
         );
 
   /// The current course's id.
@@ -35,13 +37,15 @@ class Course extends CourseEntity {
     String id,
     String name,
     String semester,
-    List<String> lecturesIds,
+    String teacherId,
+    List<String> studentsIds,
   }) =>
       Course(
         id: id ?? this.id,
         name: name ?? this.name,
+        studentsIds: studentsIds ?? this.studentsIds,
+        teacherId: teacherId ?? this.teacherId,
         semester: semester ?? this.semester,
-        lecturesIds: lecturesIds ?? this.lecturesIds,
       );
 
   factory Course.fromJson(Map<String, dynamic> json) => _$CourseFromJson(json);

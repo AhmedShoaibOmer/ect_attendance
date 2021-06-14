@@ -10,9 +10,10 @@ Course _$CourseFromJson(Map<String, dynamic> json) {
   return Course(
     name: json['name'] as String,
     semester: json['semester'] as String,
-    lecturesIds:
-        (json['lecturesIds'] as List)?.map((e) => e as String)?.toList(),
     id: json['id'] as String,
+    teacherId: json['teacherId'] as String,
+    studentsIds:
+        (json['studentsIds'] as List)?.map((e) => e as String)?.toList(),
   );
 }
 
@@ -20,7 +21,8 @@ Map<String, dynamic> _$CourseToJson(Course instance) {
   final val = <String, dynamic>{
     'name': instance.name,
     'semester': instance.semester,
-    'lecturesIds': instance.lecturesIds,
+    'teacherId': instance.teacherId,
+    'studentsIds': instance.studentsIds,
   };
 
   void writeNotNull(String key, dynamic value) {

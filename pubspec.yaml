@@ -23,11 +23,24 @@ dependencies:
 
   firebase_analytics: "^7.0.1"
 
-  circular_bottom_navigation: ^1.0.1
+  paginate_firestore:
+    path: plugins/paginate_firestore
 
   path_provider: ^2.0.2
   qr_code_scanner: ^0.5.1
   qr_flutter: ^4.0.0
+
+  share_plus: ^2.1.2
+
+  datetime_picker_formfield: ^2.0.0
+
+  intl: ^0.17.0
+  flutter_localizations:
+    sdk: flutter
+
+  syncfusion_flutter_charts: ^19.1.66+1
+
+  file_picker: ^3.0.2+2
 
 dev_dependencies:
   flutter_test:
@@ -36,3 +49,7 @@ dev_dependencies:
 flutter:
 
   uses-material-design: true
+
+flutter_intl:
+  main_locale: en_US
+  enabled: true

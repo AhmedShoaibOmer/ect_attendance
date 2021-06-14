@@ -1,17 +1,31 @@
 import 'package:dartz/dartz.dart';
+import 'package:meta/meta.dart';
 
 import '../../core/core.dart';
 import '../entities/lecture_entity.dart';
 
 abstract class LectureRepository {
-  Future<Either<Failure, List<LectureEntity>>> getLecture(
-      List<String> lectures);
-
   /// Creates a new Lecture .
   /// returns the new Lecture id.
-  Future<Either<Failure, String>> addLecture(String name);
+  Future<Either<Failure, String>> addLecture({
+    @required String courseId,
+    @required String name,
+    @required List<String> studentsIds,
+    @required DateTime dateTime,
+  });
 
-  Future<Either<Failure, void>> deleteLecture(String lectureId);
+  Future<Either<Failure, void>> deleteLecture({
+    @required String lectureId,
+    @required String courseId,
+  });
 
-  Future<Either<Failure, void>> updateLecture(LectureEntity lecture);
+  Future<Either<Failure, void>> updateLecture({
+    @required LectureEntity lecture,
+    @required String courseId,
+  });
+
+  Future<Either<Failure, LectureEntity>> registerAttendance({
+    @required String studentId,
+    @required String code,
+  });
 }

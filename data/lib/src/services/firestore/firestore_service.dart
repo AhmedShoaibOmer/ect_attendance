@@ -30,7 +30,7 @@ class FirestoreService {
 
   CollectionReference _usersCollection =
       FirebaseFirestore.instance.collection(usersPath);
-  final _controller = StreamController<User>();
+  final _controller = StreamController<UserEntity>();
 
   /// This stream is directly linked to the authentication state when it send
   /// an empty user it means no user authenticated.
@@ -45,7 +45,7 @@ class FirestoreService {
       if (event != null && event != UserEntity.empty) {
         preferences.setCurrentUserId(event.id);
       } else {
-        preferences.setCurrentUserId(null);
+        preferences.setCurrentUserId('');
       }
       return event;
     });
@@ -100,46 +100,93 @@ class FirestoreService {
     print('User Entity emitted : ${user.name}');
   }
 
+  Future<List<User>> getUsers(List<String> ids) async {
+    List<User> users = [];
+    for (String id in ids) {
+      final doc = await _usersCollection.doc(id).get();
+      users.add(User.fromJson(doc.toJson));
+    }
+    return users;
+  }
+
+  Query getUsersWithRole(String role) {
+    assert(
+      role == 'teacher' || role == 'student',
+    );
+    return _usersCollection.where('role', isEqualTo: role).orderBy('name');
+  }
+
+  Future<void> deleteUser(String userId) async {
+    await _usersCollection.doc(userId).delete();
+  }
+
+  Future<void> addEditUser(User user) async {
+    await _usersCollection.doc(user.id).set(
+          user.toJson(),
+          SetOptions(merge: true),
+        );
+  }
+
+  Future<void> addUsers(List<User> users) async {
+    final batch = _firestore.batch();
+
+    for (User user in users) {
+      batch.set(
+        _usersCollection.doc(user.id),
+        user.toJson(),
+        SetOptions(merge: true),
+      );
+    }
+
+    await batch.commit();
+  }
+
   // **************************************************************************
   // Course related: BEGIN
   // **************************************************************************
   CollectionReference _coursesCollection =
       FirebaseFirestore.instance.collection(coursesPath);
 
+  Stream<Course> course(String courseId) {
+    return _coursesCollection
+        .doc(
+          courseId,
+        )
+        .snapshots()
+        .map(
+          (event) => Course.fromJson(event.toJson),
+        );
+  }
+
   Future<String> addCourse({
-    String courseName,
-    String semester,
+    @required String courseName,
+    @required String semester,
+    @required String teacherId,
   }) async {
     String courseId;
     await _coursesCollection.add(
-      {
-        "name": courseName,
-        "semester": semester,
-      },
+      {"name": courseName, "semester": semester, "teacherId": teacherId},
     ).then((courseRef) async {
       courseId = courseRef.id;
     });
     return courseId;
   }
 
-  Future<List<Course>> getCourses(List<String> coursesIds) async {
-    List<Course> courses = [];
-    if (coursesIds == null || coursesIds.isEmpty) return null;
-    for (var element in coursesIds) {
-      await _coursesCollection.doc(element).get().then((value) {
-        print('courses fetched from firestore ${value.toJson}');
-        courses.add(
-          Course.fromJson(value.toJson),
-        );
-      });
-    }
-    return courses;
+  Query getCoursesForTeacher(String teacherId) {
+    return _coursesCollection.where(
+      'teacherId',
+      isEqualTo: teacherId,
+    );
+  }
+
+  Query getCourses() {
+    return _coursesCollection;
   }
 
   Future<void> updateCourse({
-    String courseId,
-    String name,
-    String semester,
+    @required String courseId,
+    @required String name,
+    @required String semester,
   }) async {
     if (name != null)
       await _coursesCollection
@@ -160,9 +207,9 @@ class FirestoreService {
       );
   }
 
-  Future<void> deleteCourse({
+  Future<void> deleteCourse(
     String courseId,
-  }) async {
+  ) async {
     await _coursesCollection
         .doc(
           courseId,
@@ -183,92 +230,109 @@ class FirestoreService {
     );
   }
 
-  Future<void> addNewLectureToCourse(
+  Future<String> addNewLectureToCourse({
     String courseId,
-    Lecture lecture,
-  ) async {
+    String name,
+    DateTime dateTime,
+    List<String> studentsIds,
+  }) async {
     String lectureId;
+    print('adding new lecture firestore');
 
-    await _lecturesCollection(courseId)
-        .add(
-          lecture.toJson(),
-        )
-        .then((value) => lectureId = value.id);
-
-    await _coursesCollection.doc(courseId).update(
+    await _lecturesCollection(courseId).add(
       {
-        "lecturesIds": FieldValue.arrayUnion([lectureId]),
+        "name": name,
+        "date": dateTime,
+        'attendeesIds': [],
+        'absentIds': studentsIds,
+        'excusedAbsenteesIds': [],
       },
-    );
-  }
-
-  Future<void> removeLectureFromCourse(
-      String courseId, String lectureId) async {
-    await _coursesCollection.doc(courseId).update(
-      {
-        "lecturesIds": FieldValue.arrayRemove([lectureId]),
-      },
-    );
+    ).then((value) => lectureId = value.id);
+    return lectureId;
   }
 
   Future<void> deleteLectureFromCourse(
     String courseId,
     String lectureId,
   ) async {
-    await _lecturesCollection(courseId)
-        .doc(lectureId)
-        .delete()
-        .then((value) async {
-      await _coursesCollection.doc(courseId).update({
-        "lecturesIds": FieldValue.arrayRemove([lectureId]),
-      });
-    });
+    await _lecturesCollection(courseId).doc(lectureId).delete();
   }
 
-  Future<void> submitAttendance({
+  Future<void> updateLecture({
+    Lecture lecture,
+    String courseId,
+  }) async {
+    await _lecturesCollection(courseId)
+        .doc(
+          lecture.id,
+        )
+        .update(
+          lecture.toJson(),
+        );
+  }
+
+  Future<Lecture> submitAttendance({
     @required String studentId,
     @required String courseId,
     @required String lectureId,
   }) async {
+    Lecture lecture;
     await _lecturesCollection(courseId).doc(lectureId).update({
       "attendeesIds": FieldValue.arrayUnion([studentId]),
       "absentIds": FieldValue.arrayRemove([studentId]),
       "excusedAbsenteesIds": FieldValue.arrayRemove([studentId]),
+    }).then((_) async {
+      await _lecturesCollection(courseId).doc(lectureId).get().then((value) {
+        lecture = Lecture.fromJson(value.toJson);
+      });
     });
+    return lecture;
   }
 
-  Future<void> submitAbsence({
+  Future<Lecture> submitAbsence({
     @required String studentId,
     @required String courseId,
     @required String lectureId,
   }) async {
+    Lecture lecture;
     await _lecturesCollection(courseId).doc(lectureId).update({
       "attendeesIds": FieldValue.arrayRemove([studentId]),
       "absentIds": FieldValue.arrayUnion([studentId]),
       "excusedAbsenteesIds": FieldValue.arrayRemove([studentId]),
+    }).then((_) async {
+      await _lecturesCollection(courseId).doc(lectureId).get().then((value) {
+        lecture = Lecture.fromJson(value.toJson);
+      });
     });
+    return lecture;
   }
 
-  Future<void> submitExcusedAbsence({
+  Future<Lecture> submitExcusedAbsence({
     @required String studentId,
     @required String courseId,
     @required String lectureId,
   }) async {
+    Lecture lecture;
     await _lecturesCollection(courseId).doc(lectureId).update({
       "attendeesIds": FieldValue.arrayRemove([studentId]),
       "absentIds": FieldValue.arrayRemove([studentId]),
       "excusedAbsenteesIds": FieldValue.arrayUnion([studentId]),
+    }).then((_) async {
+      await _lecturesCollection(courseId).doc(lectureId).get().then((value) {
+        lecture = Lecture.fromJson(value.toJson);
+      });
     });
+    return lecture;
   }
 
   Query lecturesForCourse({
     String courseId,
   }) {
-    return _lecturesCollection(courseId);
+    return _lecturesCollection(courseId).orderBy("date");
   }
 
   // **************************************************************************
-  // Study Material related: END
+  // Lecture related: END
   // **************************************************************************
 
   void dispose() {
@@ -282,7 +346,7 @@ class FirestoreService {
 extension DocumentSnapshotExtensions on DocumentSnapshot {
   Map<String, dynamic> get toJson {
     final jsonData = data();
-    jsonData.addAll({"universityId": id});
+    jsonData.addAll({"id": id});
     return jsonData;
   }
 }

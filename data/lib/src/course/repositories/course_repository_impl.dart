@@ -17,13 +17,16 @@ class CourseRepositoryImpl extends CourseRepository {
         this._networkInfo = networkInfo;
 
   @override
-  Future<Either<Failure, String>> addCourse(String name) async {
-    /*if (await _networkInfo.isConnected) {
+  Future<Either<Failure, String>> addCourse(
+      {String name, String semester, String teacherId}) async {
+    if (await _networkInfo.isConnected) {
       try {
         String courseId;
         await _firestoreService
             .addCourse(
               courseName: name,
+              teacherId: teacherId,
+              semester: semester,
             )
             .then((value) => courseId = value);
         return Right(courseId);
@@ -33,16 +36,14 @@ class CourseRepositoryImpl extends CourseRepository {
       }
     } else {
       return Left(NoConnectionFailure());
-    }*/
+    }
   }
 
   @override
   Future<Either<Failure, void>> deleteCourse(String courseId) async {
-    /*if (await _networkInfo.isConnected) {
+    if (await _networkInfo.isConnected) {
       try {
-        await _firestoreService.deleteCourse(
-          courseId: courseId,
-        );
+        await _firestoreService.deleteCourse(courseId);
         return Right(() {});
       } catch (e) {
         print(e);
@@ -50,33 +51,17 @@ class CourseRepositoryImpl extends CourseRepository {
       }
     } else {
       return Left(NoConnectionFailure());
-    }*/
-  }
-
-  @override
-  Future<Either<Failure, List<CourseEntity>>> getCourses(
-      List<String> coursesIds) async {
-    /*try {
-      List<Course> courses;
-      await _firestoreService
-          .getCourses(coursesIds)
-          .then((value) => courses = value);
-      print('courses now in the repo ${courses?.length}');
-      return Right(courses);
-    } catch (e) {
-      if (await _networkInfo.isConnected) return Left(NoConnectionFailure());
-      print(e);
-      return Left(CoursesFetchingFailure());
-    }*/
+    }
   }
 
   @override
   Future<Either<Failure, void>> updateCourse(CourseEntity course) async {
-    /*if (await _networkInfo.isConnected) {
+    if (await _networkInfo.isConnected) {
       try {
         await _firestoreService.updateCourse(
           courseId: course.id,
           name: course.name,
+          semester: course.semester,
         );
         return Right(() {});
       } catch (e) {
@@ -85,6 +70,51 @@ class CourseRepositoryImpl extends CourseRepository {
       }
     } else {
       return Left(NoConnectionFailure());
-    }*/
+    }
+  }
+
+  @override
+  Stream<CourseEntity> course(
+    String courseId,
+  ) =>
+      _firestoreService.course(courseId);
+
+  @override
+  Future<Either<Failure, ExcelFileEntity>> createAttendanceExcelFile({
+    String fileName,
+    List<UserEntity> students,
+    List<LectureEntity> lectures,
+    String directoryPath,
+    String nameColumnLabel = 'Name',
+    String studentIdColumnLabel = 'Student ID',
+    String lectureColumnLabel = 'Lecture',
+    String attendancePercentColumnLabel = 'Attendance percent',
+    String excusedAbsencePercentColumnLabel = 'Excused absence percent',
+    String absencePercentColumnLabel = 'Absence percent',
+    String presentTextValue = 'Present',
+    String absentTextValue = 'Absent',
+    String excusedAbsentTextValue = 'Absent with excuse',
+  }) async {
+    try {
+      final response = await ExcelService.createAttendanceExcelFile(
+        fileName: fileName,
+        students: students,
+        lectures: lectures,
+        directoryPath: directoryPath,
+        nameColumnLabel: nameColumnLabel,
+        studentIdColumnLabel: studentIdColumnLabel,
+        lectureColumnLabel: lectureColumnLabel,
+        attendancePercentColumnLabel: attendancePercentColumnLabel,
+        excusedAbsencePercentColumnLabel: excusedAbsencePercentColumnLabel,
+        absencePercentColumnLabel: absencePercentColumnLabel,
+        presentTextValue: presentTextValue,
+        absentTextValue: absentTextValue,
+        excusedAbsentTextValue: excusedAbsentTextValue,
+      );
+      return Right(response);
+    } catch (e) {
+      print(e);
+      return Left(AttendanceExcelFileCreationFailure());
+    }
   }
 }

@@ -1,5 +1,7 @@
 import 'package:data/data.dart';
+import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:domain/domain.dart';
+import 'package:ect_attendance/locale_cubit.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,13 +14,54 @@ Future<void> main() async {
   await Firebase.initializeApp();
 
   final firestoreService = FirestoreService.instance;
+
   final authenticationRepository =
       AuthenticationRepositoryImpl(firestoreService: firestoreService);
 
-  runApp(BlocProvider(
-    create: (_) => AuthenticationBloc(
-      authenticationRepository: authenticationRepository,
+  final networkInfo =
+      NetworkInfoImpl(dataConnectionChecker: DataConnectionChecker());
+
+  final CourseRepository courseRepository = CourseRepositoryImpl(
+    firestoreService: firestoreService,
+    networkInfo: networkInfo,
+  );
+
+  final LectureRepository lectureRepository = LectureRepositoryImpl(
+    firestoreService: firestoreService,
+    networkInfo: networkInfo,
+  );
+
+  final UserRepository userRepository = UserRepositoryImpl(
+    firestoreService: firestoreService,
+    networkInfo: networkInfo,
+  );
+
+  runApp(
+    MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider(
+          create: (context) => lectureRepository,
+        ),
+        RepositoryProvider(
+          create: (context) => courseRepository,
+        ),
+        RepositoryProvider(
+          create: (context) => userRepository,
+        )
+      ],
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (_) => AuthenticationBloc(
+              authenticationRepository: authenticationRepository,
+            ),
+          ),
+          BlocProvider(
+            create: (_) => LocaleCubit(),
+          ),
+        ],
+        child: ECTApp(),
+      ),
     ),
-    child: ECTApp(),
-  ));
+  );
 }

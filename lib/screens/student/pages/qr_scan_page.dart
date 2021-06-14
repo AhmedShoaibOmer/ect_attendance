@@ -1,20 +1,20 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
+import '../../../generated/l10n.dart';
+
 class QRScanPage extends StatefulWidget {
-  static var route = MaterialPageRoute(
-    builder: (context) => QRScanPage(),
-  );
+  const QRScanPage({Key key, @required this.onCodeScanned}) : super(key: key);
+
+  final Function(String) onCodeScanned;
 
   @override
   _QRScanPageState createState() => _QRScanPageState();
 }
 
 class _QRScanPageState extends State<QRScanPage> {
-  Barcode result;
   QRViewController controller;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
 
@@ -32,95 +32,58 @@ class _QRScanPageState extends State<QRScanPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: <Widget>[
-          Expanded(flex: 4, child: _buildQrView(context)),
-          Expanded(
-            flex: 1,
-            child: FittedBox(
-              fit: BoxFit.contain,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  if (result != null)
-                    Text(
-                        'Barcode Type: ${describeEnum(result.format)}   Data: ${result.code}')
-                  else
-                    Text('Scan a code'),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Container(
-                        margin: EdgeInsets.all(8),
-                        child: ElevatedButton(
-                            onPressed: () async {
-                              await controller?.toggleFlash();
-                              setState(() {});
-                            },
-                            child: FutureBuilder(
-                              future: controller?.getFlashStatus(),
-                              builder: (context, snapshot) {
-                                return Text('Flash: ${snapshot.data}');
-                              },
-                            )),
-                      ),
-                      Container(
-                        margin: EdgeInsets.all(8),
-                        child: ElevatedButton(
-                            onPressed: () async {
-                              await controller?.flipCamera();
-                              setState(() {});
-                            },
-                            child: FutureBuilder(
-                              future: controller?.getCameraInfo(),
-                              builder: (context, snapshot) {
-                                if (snapshot.data != null) {
-                                  return Text(
-                                      'Camera facing ${describeEnum(snapshot.data)}');
-                                } else {
-                                  return Text('loading');
-                                }
-                              },
-                            )),
-                      )
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Container(
-                        margin: EdgeInsets.all(8),
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            await controller?.pauseCamera();
-                          },
-                          child: Text('pause', style: TextStyle(fontSize: 20)),
-                        ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.all(8),
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            await controller?.resumeCamera();
-                          },
-                          child: Text('resume', style: TextStyle(fontSize: 20)),
-                        ),
-                      )
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          )
+      appBar: AppBar(
+        title: Text(S.of(context).scan_lecture_code),
+        backgroundColor: Colors.transparent,
+        actions: [
+          _buildFlashToggleButton(),
+          _buildFlipCameraButton(),
         ],
+        elevation: 0,
+      ),
+      extendBodyBehindAppBar: true,
+      body: Container(
+        clipBehavior: Clip.hardEdge,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(10),
+            topRight: Radius.circular(10),
+          ),
+        ),
+        child: _buildQrView(context),
       ),
     );
   }
 
+  IconButton _buildFlipCameraButton() {
+    return IconButton(
+      icon: Icon(Icons.flip_camera_android_rounded),
+      onPressed: () async {
+        await controller?.flipCamera();
+      },
+    );
+  }
+
+  IconButton _buildFlashToggleButton() {
+    return IconButton(
+      icon: FutureBuilder(
+        future: controller?.getFlashStatus(),
+        builder: (context, snapshot) {
+          bool isFlashOn = snapshot.data != null ? snapshot.data : false;
+          return isFlashOn
+              ? Icon(Icons.flash_off_rounded)
+              : Icon(Icons.flash_on_rounded);
+        },
+      ),
+      onPressed: () async {
+        await controller?.toggleFlash();
+        setState(() {});
+      },
+    );
+  }
+
   Widget _buildQrView(BuildContext context) {
-    // For this example we check how width or tall the device is and change the scanArea and overlay accordingly.
+    // We check how width or tall the device is and change the scanArea and overlay accordingly.
     var scanArea = (MediaQuery.of(context).size.width < 400 ||
             MediaQuery.of(context).size.height < 400)
         ? 150.0
@@ -136,9 +99,9 @@ class _QRScanPageState extends State<QRScanPage> {
       // formatsAllowed: [BarcodeFormat.qrcode],
       overlay: QrScannerOverlayShape(
         borderColor: Colors.red,
-        borderRadius: 10,
+        borderRadius: 2,
         borderLength: 30,
-        borderWidth: 10,
+        borderWidth: 5,
         cutOutSize: scanArea,
       ),
     );
@@ -150,7 +113,7 @@ class _QRScanPageState extends State<QRScanPage> {
     });
     controller.scannedDataStream.listen((scanData) {
       setState(() {
-        result = scanData;
+        widget.onCodeScanned(scanData.code);
       });
     });
   }

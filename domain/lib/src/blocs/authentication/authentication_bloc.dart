@@ -7,7 +7,6 @@ import 'package:meta/meta.dart';
 import '../../../domain.dart';
 
 part 'authentication_event.dart';
-
 part 'authentication_state.dart';
 
 class AuthenticationBloc
@@ -70,7 +69,7 @@ class AuthenticationBloc
     if (response.isLeft()) {
       yield* response.fold((l) async* {
         yield AuthenticationState.authenticationFailed(failure: l);
-      }, (r) {});
+      }, (r) async* {});
     }
   }
 

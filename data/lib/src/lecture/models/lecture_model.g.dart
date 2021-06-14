@@ -10,6 +10,7 @@ Lecture _$LectureFromJson(Map<String, dynamic> json) {
   return Lecture(
     id: json['id'] as String,
     name: json['name'] as String,
+    date: Lecture.dateFromJson(json['date']),
     attendeesIds:
         (json['attendeesIds'] as List)?.map((e) => e as String)?.toList(),
     absentIds: (json['absentIds'] as List)?.map((e) => e as String)?.toList(),
@@ -34,5 +35,6 @@ Map<String, dynamic> _$LectureToJson(Lecture instance) {
   }
 
   writeNotNull('id', Lecture.toNull(instance.id));
+  val['date'] = Lecture.dateToJson(instance.date);
   return val;
 }

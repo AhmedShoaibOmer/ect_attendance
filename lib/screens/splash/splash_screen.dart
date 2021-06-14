@@ -1,4 +1,5 @@
 import 'package:domain/domain.dart';
+import 'package:ect_attendance/screens/admin/admin_home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -17,6 +18,11 @@ class SplashScreen extends StatelessWidget {
                 TeacherHomeScreen.route,
                 (route) => false,
               );
+            } else if (state.user.isAdmin) {
+              Navigator.of(context).pushAndRemoveUntil(
+                AdminHomeScreen.route,
+                (route) => false,
+              );
             } else {
               Navigator.of(context).pushAndRemoveUntil(
                 StudentHomeScreen.route,
@@ -27,7 +33,7 @@ class SplashScreen extends StatelessWidget {
           case AuthenticationStatus.authenticationFailed:
           case AuthenticationStatus.unauthenticated:
             Navigator.of(context).pushAndRemoveUntil(
-              AuthScreen.route,
+              SignInScreen.route,
               (route) => false,
             );
             break;
