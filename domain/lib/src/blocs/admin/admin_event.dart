@@ -22,6 +22,15 @@ class DeleteCourseEvent extends AdminEvent {
   List<Object> get props => [courseId];
 }
 
+class DeleteDepartmentEvent extends AdminEvent {
+  final String departmentId;
+
+  DeleteDepartmentEvent(this.departmentId);
+
+  @override
+  List<Object> get props => [departmentId];
+}
+
 class AddEditUserEvent extends AdminEvent {
   final UserEntity user;
 
@@ -38,4 +47,22 @@ class AddUsersEvent extends AdminEvent {
 
   @override
   List<Object> get props => [users];
+}
+
+class AddEditCourseEvent extends AdminEvent {
+  final CourseEntity course;
+
+  AddEditCourseEvent(this.course);
+
+  @override
+  List<Object> get props => [course];
+}
+
+class AddEditDepartmentEvent extends AdminEvent {
+  final DepartmentEntity departmentEntity;
+
+  AddEditDepartmentEvent(this.departmentEntity);
+
+  @override
+  List<Object> get props => [departmentEntity];
 }

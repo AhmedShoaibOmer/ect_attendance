@@ -92,5 +92,17 @@
   "language": "عربي",
   "allCourses": "All Courses",
   "addCourse": "Add Course",
-  "course": "Course"
+  "course": "Course",
+  "courseSavedSuccessfully": "Course saved successfully",
+  "editCourse": "Edit Course",
+  "courseName": "Course name",
+  "youAreNotAllowedToSubmitAttendanceToAnyOf": "You are not allowed to submit attendance to any of this course lectures; since you aren't studying this course.",
+  "theDepartments": "Departments",
+  "allDepartments": "All departments",
+  "departmentSavedSuccessfully": "Department saved successfully",
+  "departmentName": "Department Name",
+  "enterTheFullDepartmentName": "Enter the full department name.",
+  "editDepartment": "Edit department",
+  "addDepartment": "Add department",
+  "department": "Department"
 }

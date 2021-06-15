@@ -1,8 +1,6 @@
 import '../../../domain.dart';
 
-class CourseCreateFailure extends Failure {}
-
-class CourseUpdateFailure extends Failure {}
+class CourseAddEditFailure extends Failure {}
 
 class CourseDeleteFailure extends Failure {}
 

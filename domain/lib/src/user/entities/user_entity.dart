@@ -12,6 +12,8 @@ class UserEntity extends Equatable {
     @required this.id,
     @required this.name,
     @required this.role,
+    @required this.semester,
+    @required this.departmentId,
   }) : assert(id != null);
 
   /// The current user's id.
@@ -20,14 +22,20 @@ class UserEntity extends Equatable {
   /// The current user's name (display name).
   final String name;
 
+  final int semester;
+
   /// the current user's role.
   final String role;
+
+  final String departmentId;
 
   /// Empty user which represents an unauthenticated user.
   static const empty = UserEntity(
     id: '',
     name: null,
-    role: UserEntity.Student,
+    semester: 0,
+    departmentId: null,
+    role: null,
   );
 
   static const Student = 'student';
@@ -41,9 +49,12 @@ class UserEntity extends Equatable {
   bool get isTeacher => this.role == UserEntity.Teacher;
 
   @override
-  List<Object> get props => [
+  List<Object> get props =>
+      [
         id,
         name,
         role,
+        departmentId,
+        semester,
       ];
 }

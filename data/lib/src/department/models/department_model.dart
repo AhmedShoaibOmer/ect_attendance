@@ -2,22 +2,16 @@ import 'package:domain/domain.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:meta/meta.dart';
 
-part 'course_model.g.dart';
+part 'department_model.g.dart';
 
 @JsonSerializable()
-class Course extends CourseEntity {
-  Course({
+class Department extends DepartmentEntity {
+  Department({
     @required String name,
-    @required int semester,
     @required this.id,
-    @required String teacherId,
-    @required String departmentId,
   }) : super(
-    id: id,
+          id: id,
           name: name,
-          semester: semester,
-          teacherId: teacherId,
-          departmentId: departmentId,
         );
 
   /// The current course's id.
@@ -33,22 +27,17 @@ class Course extends CourseEntity {
 
   static toNull(_) => null;
 
-  Course copyWith({
+  Department copyWith({
     String id,
     String name,
-    int semester,
-    String teacherId,
-    String departmentId,
   }) =>
-      Course(
+      Department(
         id: id ?? this.id,
         name: name ?? this.name,
-        teacherId: teacherId ?? this.teacherId,
-        departmentId: departmentId ?? this.departmentId,
-        semester: semester ?? this.semester,
       );
 
-  factory Course.fromJson(Map<String, dynamic> json) => _$CourseFromJson(json);
+  factory Department.fromJson(Map<String, dynamic> json) =>
+      _$DepartmentFromJson(json);
 
-  Map<String, dynamic> toJson() => _$CourseToJson(this);
+  Map<String, dynamic> toJson() => _$DepartmentToJson(this);
 }

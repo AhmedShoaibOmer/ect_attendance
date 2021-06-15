@@ -966,6 +966,126 @@ class S {
       args: [],
     );
   }
+
+  /// `Course saved successfully`
+  String get courseSavedSuccessfully {
+    return Intl.message(
+      'Course saved successfully',
+      name: 'courseSavedSuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Edit Course`
+  String get editCourse {
+    return Intl.message(
+      'Edit Course',
+      name: 'editCourse',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Course name`
+  String get courseName {
+    return Intl.message(
+      'Course name',
+      name: 'courseName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You are not allowed to submit attendance to any of this course lectures; since you aren't studying this course.`
+  String get youAreNotAllowedToSubmitAttendanceToAnyOf {
+    return Intl.message(
+      'You are not allowed to submit attendance to any of this course lectures; since you aren\'t studying this course.',
+      name: 'youAreNotAllowedToSubmitAttendanceToAnyOf',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Departments`
+  String get theDepartments {
+    return Intl.message(
+      'Departments',
+      name: 'theDepartments',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `All departments`
+  String get allDepartments {
+    return Intl.message(
+      'All departments',
+      name: 'allDepartments',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Department saved successfully`
+  String get departmentSavedSuccessfully {
+    return Intl.message(
+      'Department saved successfully',
+      name: 'departmentSavedSuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Department Name`
+  String get departmentName {
+    return Intl.message(
+      'Department Name',
+      name: 'departmentName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter the full department name.`
+  String get enterTheFullDepartmentName {
+    return Intl.message(
+      'Enter the full department name.',
+      name: 'enterTheFullDepartmentName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Edit department`
+  String get editDepartment {
+    return Intl.message(
+      'Edit department',
+      name: 'editDepartment',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add department`
+  String get addDepartment {
+    return Intl.message(
+      'Add department',
+      name: 'addDepartment',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Department`
+  String get department {
+    return Intl.message(
+      'Department',
+      name: 'department',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
@@ -980,10 +1100,8 @@ class AppLocalizationDelegate extends LocalizationsDelegate<S> {
 
   @override
   bool isSupported(Locale locale) => _isSupported(locale);
-
   @override
   Future<S> load(Locale locale) => S.load(locale);
-
   @override
   bool shouldReload(AppLocalizationDelegate old) => false;
 

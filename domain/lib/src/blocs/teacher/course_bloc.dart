@@ -6,7 +6,6 @@ import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
 part 'course_event.dart';
-
 part 'course_state.dart';
 
 class CourseBloc extends Bloc<CourseEvent, CourseState> {
@@ -58,7 +57,7 @@ class CourseBloc extends Bloc<CourseEvent, CourseState> {
     final response = await _lectureRepository.addLecture(
       dateTime: event.date,
       name: event.name,
-      studentsIds: course.studentsIds,
+      studentsIds: students.map((e) => e.id).toList(),
       courseId: course.id,
     );
 
@@ -77,7 +76,7 @@ class CourseBloc extends Bloc<CourseEvent, CourseState> {
       CourseChangedEvent event) async* {
     yield CourseLoadingState();
     course = event.course;
-    students = await _userRepository.getStudents(course.studentsIds);
+    students = await _userRepository.getStudentsForCourse(course);
     yield CourseLoadedState(course);
   }
 

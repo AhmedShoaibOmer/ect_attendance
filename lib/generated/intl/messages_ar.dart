@@ -30,6 +30,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "absent": MessageLookupByLibrary.simpleMessage("غائب"),
         "absent_with_excuse": MessageLookupByLibrary.simpleMessage("غائب بعذر"),
         "addCourse": MessageLookupByLibrary.simpleMessage("إضافة مقرر"),
+        "addDepartment": MessageLookupByLibrary.simpleMessage("إضافة قسم"),
         "addStudent": MessageLookupByLibrary.simpleMessage("إضافة طالب"),
         "addStudents": MessageLookupByLibrary.simpleMessage("إضافة طلبة"),
         "addTeacher": MessageLookupByLibrary.simpleMessage("إضافة معلم"),
@@ -38,6 +39,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "add_lecture": MessageLookupByLibrary.simpleMessage("إضافة محاضرة"),
         "admin": MessageLookupByLibrary.simpleMessage("مشرف"),
         "allCourses": MessageLookupByLibrary.simpleMessage("جميع المقررات"),
+        "allDepartments": MessageLookupByLibrary.simpleMessage("جميع الأقسام"),
         "allStudents": MessageLookupByLibrary.simpleMessage("جميع الطلبة"),
         "allTeachers": MessageLookupByLibrary.simpleMessage("جميع المعلمين"),
         "all_fields_are_required":
@@ -58,6 +60,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "clickHereToSelectFile":
             MessageLookupByLibrary.simpleMessage("إضغط هنا لإختيار الملف"),
         "course": MessageLookupByLibrary.simpleMessage("مقرر"),
+        "courseName": MessageLookupByLibrary.simpleMessage("إسم المقرر"),
+        "courseSavedSuccessfully":
+            MessageLookupByLibrary.simpleMessage("تم حفظ المقرر بنجاح"),
         "date_and_time":
             MessageLookupByLibrary.simpleMessage("التاريخ و الوقت"),
         "date_and_time_hint":
@@ -65,13 +70,21 @@ class MessageLookup extends MessageLookupByLibrary {
         "delete": MessageLookupByLibrary.simpleMessage("حذف"),
         "delete_lecture": MessageLookupByLibrary.simpleMessage("حذف محاضرة"),
         "deletedSuccessfully":
-            MessageLookupByLibrary.simpleMessage("تم الحذف بنجاحز"),
+            MessageLookupByLibrary.simpleMessage("تم الحذف بنجاح"),
+        "department": MessageLookupByLibrary.simpleMessage("قسم"),
+        "departmentName": MessageLookupByLibrary.simpleMessage("إسم القسم"),
+        "departmentSavedSuccessfully":
+            MessageLookupByLibrary.simpleMessage("تم حفظ القسم بنجاح"),
         "done": MessageLookupByLibrary.simpleMessage("تم"),
         "edit": MessageLookupByLibrary.simpleMessage("تعديل"),
+        "editCourse": MessageLookupByLibrary.simpleMessage("تعديل مقرر"),
+        "editDepartment": MessageLookupByLibrary.simpleMessage("تعديل قسم"),
         "editUser": MessageLookupByLibrary.simpleMessage("تعديل مستخدم"),
         "edit_lecture": MessageLookupByLibrary.simpleMessage("تعديل مخاضرة"),
         "enterAValidUserId":
             MessageLookupByLibrary.simpleMessage("ادخل معرف مستخدم صالح"),
+        "enterTheFullDepartmentName":
+            MessageLookupByLibrary.simpleMessage("أدخل إسم القسم كاملا"),
         "enterTheFullUserName":
             MessageLookupByLibrary.simpleMessage("ادخل إسم المستخدم الكامل"),
         "enterTheUserId":
@@ -137,6 +150,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "studentsList": MessageLookupByLibrary.simpleMessage("قائمة الطلبة"),
         "teacher": MessageLookupByLibrary.simpleMessage("معلم"),
         "theCourses": MessageLookupByLibrary.simpleMessage("المقررات"),
+        "theDepartments": MessageLookupByLibrary.simpleMessage("الأقسام"),
         "theStudents": MessageLookupByLibrary.simpleMessage("الطلبة"),
         "theTeachers": MessageLookupByLibrary.simpleMessage("المعلمين"),
         "thereAreNoStudentsStudyingThisCourse":
@@ -152,10 +166,13 @@ class MessageLookup extends MessageLookupByLibrary {
         "userType": MessageLookupByLibrary.simpleMessage("نوع المستخدم"),
         "usersCreationFailedPleaseTryAgain":
             MessageLookupByLibrary.simpleMessage(
-                "فشلت إضافة المستحدمين, الرجاء المحاولة مرة اخرىز"),
+                "فشلت إضافة المستحدمين, الرجاء المحاولة مرة اخرى"),
         "usersSavedSuccessfully":
-            MessageLookupByLibrary.simpleMessage("تم حفظ المستخدمين بنجاحز"),
+            MessageLookupByLibrary.simpleMessage("تم حفظ المستخدمين بنجاح"),
         "welcome": MessageLookupByLibrary.simpleMessage("مرحبا"),
+        "youAreNotAllowedToSubmitAttendanceToAnyOf":
+            MessageLookupByLibrary.simpleMessage(
+                "غير مسموح لك بتسجيل الحضور في محاضرات هذا المقرر بما أنك لا تدرس هذا المقرر"),
         "youNeedToBeConnectedToTheInternetToLogin":
             MessageLookupByLibrary.simpleMessage(
                 "يجب ان تكون متصلا بالإنترنت لإكمال تسجيل الدخول"),

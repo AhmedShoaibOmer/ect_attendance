@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../generated/l10n.dart';
 import '../../widgets/widgets.dart';
 import 'pages/manage_courses_page.dart';
+import 'pages/manage_departments_page.dart';
 import 'pages/manage_students_page.dart';
 import 'pages/manage_teachers_page.dart';
 
@@ -44,6 +45,11 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
             context,
             title: S.of(context).theCourses.toUpperCase(),
             page: ManageCoursesPage(),
+          ),
+          buildManageButton(
+            context,
+            title: S.of(context).theDepartments.toUpperCase(),
+            page: ManageDepartmentsPage(),
           ),
         ],
       ),
@@ -87,6 +93,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
         builder: (context) {
           return BlocProvider(
             create: (_) => AdminBloc(
+              RepositoryProvider.of(context),
               RepositoryProvider.of(context),
               RepositoryProvider.of(context),
             ),

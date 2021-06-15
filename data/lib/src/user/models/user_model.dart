@@ -11,21 +11,29 @@ class User extends UserEntity {
     @required this.id,
     @required String name,
     String role,
+    int semester,
+    String departmentId,
   }) : super(
-          name: name,
+    name: name,
           role: role,
+          semester: semester,
           id: id,
+          departmentId: departmentId,
         );
 
   User copyWith({
     String id,
     String name,
+    int semester,
     String role,
+    String departmentId,
   }) =>
       User(
         id: id ?? this.id,
         name: name ?? this.name,
+        semester: semester ?? this.semester,
         role: role ?? this.role,
+        departmentId: departmentId ?? this.departmentId,
       );
 
   /// The current user's university  id.

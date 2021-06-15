@@ -1,0 +1,1 @@
+class StudentNotAuthorizedException implements Exception {}

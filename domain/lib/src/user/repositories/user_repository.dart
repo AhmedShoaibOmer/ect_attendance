@@ -5,6 +5,8 @@ import '../../../domain.dart';
 abstract class UserRepository {
   Future<List<UserEntity>> getStudents(List<String> studentsIds);
 
+  Future<List<UserEntity>> getStudentsForCourse(CourseEntity courseEntity);
+
   /// Used to clean or the resources from the memory.
   void dispose();
 

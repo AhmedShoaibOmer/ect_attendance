@@ -5,13 +5,13 @@ abstract class StudentEvent extends Equatable {}
 class AttendanceRegistrationRequested extends StudentEvent {
   final String code;
 
-  final String studentId;
+  final UserEntity student;
 
   AttendanceRegistrationRequested({
-    @required this.studentId,
+    @required this.student,
     @required this.code,
   });
 
   @override
-  List<Object> get props => [code, studentId];
+  List<Object> get props => [code, student];
 }

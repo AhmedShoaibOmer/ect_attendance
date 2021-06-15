@@ -32,6 +32,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "absent_with_excuse":
             MessageLookupByLibrary.simpleMessage("Absent with Excuse"),
         "addCourse": MessageLookupByLibrary.simpleMessage("Add Course"),
+        "addDepartment": MessageLookupByLibrary.simpleMessage("Add department"),
         "addStudent": MessageLookupByLibrary.simpleMessage("Add Student"),
         "addStudents": MessageLookupByLibrary.simpleMessage("Add Students"),
         "addTeacher": MessageLookupByLibrary.simpleMessage("Add Teacher"),
@@ -40,6 +41,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "add_lecture": MessageLookupByLibrary.simpleMessage("Add Lecture"),
         "admin": MessageLookupByLibrary.simpleMessage("Admin"),
         "allCourses": MessageLookupByLibrary.simpleMessage("All Courses"),
+        "allDepartments":
+            MessageLookupByLibrary.simpleMessage("All departments"),
         "allStudents": MessageLookupByLibrary.simpleMessage("All Students"),
         "allTeachers": MessageLookupByLibrary.simpleMessage("All Teachers"),
         "all_fields_are_required":
@@ -60,6 +63,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "clickHereToSelectFile":
             MessageLookupByLibrary.simpleMessage("Click here to select file"),
         "course": MessageLookupByLibrary.simpleMessage("Course"),
+        "courseName": MessageLookupByLibrary.simpleMessage("Course name"),
+        "courseSavedSuccessfully":
+            MessageLookupByLibrary.simpleMessage("Course saved successfully"),
         "date_and_time": MessageLookupByLibrary.simpleMessage("Date & Time"),
         "date_and_time_hint": MessageLookupByLibrary.simpleMessage(
             "Pick the date & time for the lecture"),
@@ -68,12 +74,22 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Delete Lecture"),
         "deletedSuccessfully":
             MessageLookupByLibrary.simpleMessage("Deleted successfully."),
+        "department": MessageLookupByLibrary.simpleMessage("Department"),
+        "departmentName":
+            MessageLookupByLibrary.simpleMessage("Department Name"),
+        "departmentSavedSuccessfully": MessageLookupByLibrary.simpleMessage(
+            "Department saved successfully"),
         "done": MessageLookupByLibrary.simpleMessage("Done"),
         "edit": MessageLookupByLibrary.simpleMessage("Edit"),
+        "editCourse": MessageLookupByLibrary.simpleMessage("Edit Course"),
+        "editDepartment":
+            MessageLookupByLibrary.simpleMessage("Edit department"),
         "editUser": MessageLookupByLibrary.simpleMessage("Edit User"),
         "edit_lecture": MessageLookupByLibrary.simpleMessage("Edit Lecture"),
         "enterAValidUserId":
             MessageLookupByLibrary.simpleMessage("Enter a valid User ID"),
+        "enterTheFullDepartmentName": MessageLookupByLibrary.simpleMessage(
+            "Enter the full department name."),
         "enterTheFullUserName":
             MessageLookupByLibrary.simpleMessage("Enter the full user name"),
         "enterTheUserId":
@@ -139,6 +155,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "studentsList": MessageLookupByLibrary.simpleMessage("Students List"),
         "teacher": MessageLookupByLibrary.simpleMessage("Teacher"),
         "theCourses": MessageLookupByLibrary.simpleMessage("Courses"),
+        "theDepartments": MessageLookupByLibrary.simpleMessage("Departments"),
         "theStudents": MessageLookupByLibrary.simpleMessage("Students"),
         "theTeachers": MessageLookupByLibrary.simpleMessage("Teachers"),
         "thereAreNoStudentsStudyingThisCourse":
@@ -158,6 +175,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "usersSavedSuccessfully":
             MessageLookupByLibrary.simpleMessage("Users saved successfully."),
         "welcome": MessageLookupByLibrary.simpleMessage("Welcome"),
+        "youAreNotAllowedToSubmitAttendanceToAnyOf":
+            MessageLookupByLibrary.simpleMessage(
+                "You are not allowed to submit attendance to any of this course lectures; since you aren\'t studying this course."),
         "youNeedToBeConnectedToTheInternetToLogin":
             MessageLookupByLibrary.simpleMessage(
                 "You need to be connected to the internet to login."),

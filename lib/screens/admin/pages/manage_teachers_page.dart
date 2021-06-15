@@ -9,10 +9,9 @@ import 'package:paginate_firestore/paginate_firestore.dart';
 
 import '../../../generated/l10n.dart';
 import '../../../utilities/global.dart';
-import '../../teacher/pages/search_page.dart';
 import 'add_edit_user.dart';
 import 'add_useres.dart';
-import 'user_details.dart';
+import 'admin_search_page.dart';
 
 class ManageTeachersPage extends StatelessWidget {
   @override
@@ -42,7 +41,7 @@ class ManageTeachersPage extends StatelessWidget {
                 onPressed: () {
                   showSearch(
                     context: context,
-                    delegate: SearchPage(),
+                    delegate: SearchPage(scope: 'teacher'),
                   );
                 },
               ),
@@ -76,7 +75,8 @@ class ManageTeachersPage extends StatelessWidget {
               User user = User.fromJson(documentSnapshot.toJson);
               return UserListItem(
                 user,
-                onPressed: () {
+                onPressed: null,
+/*                onPressed: () {
                   final bloc = BlocProvider.of<AdminBloc>(context);
 
                   Navigator.push(
@@ -90,7 +90,7 @@ class ManageTeachersPage extends StatelessWidget {
                       },
                     ),
                   );
-                },
+                },*/
                 isAdmin: true,
               );
             },

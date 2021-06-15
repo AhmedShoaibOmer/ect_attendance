@@ -85,7 +85,7 @@ class LectureRepositoryImpl extends LectureRepository {
 
   @override
   Future<Either<Failure, LectureEntity>> registerAttendance({
-    String studentId,
+    UserEntity student,
     String code,
   }) async {
     try {
@@ -94,7 +94,7 @@ class LectureRepositoryImpl extends LectureRepository {
       String courseId = data[0];
       String lectureId = data[1];
       final lecture = await _firestoreService.submitAttendance(
-        studentId: studentId,
+        student: student,
         courseId: courseId,
         lectureId: lectureId,
       );
@@ -102,6 +102,9 @@ class LectureRepositoryImpl extends LectureRepository {
       return Right(lecture);
     } catch (e) {
       print(e);
+      if (e is StudentNotAuthorizedException) {
+        return Left(StudentNotAuthorizedFailure());
+      }
       return Left(AttendanceRegistrationFailure());
     }
   }

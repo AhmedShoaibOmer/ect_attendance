@@ -4,32 +4,33 @@ import 'package:meta/meta.dart';
 class CourseEntity extends Equatable {
   final String id;
   final String name;
-  final String semester;
+  final int semester;
+  final String departmentId;
   final String teacherId;
-  final List<String> studentsIds;
 
   const CourseEntity({
     @required this.id,
     @required this.name,
     @required this.semester,
+    @required this.departmentId,
     @required this.teacherId,
-    @required this.studentsIds,
   }) : assert(id != null && name != null);
 
   static const empty = CourseEntity(
     id: '',
     name: '',
     teacherId: '',
-    semester: '5',
-    studentsIds: [],
+    departmentId: '',
+    semester: 0,
   );
 
   @override
-  List<Object> get props => [
+  List<Object> get props =>
+      [
         id,
         name,
         semester,
+        departmentId,
         teacherId,
-        studentsIds,
       ];
 }

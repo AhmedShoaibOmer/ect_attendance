@@ -14,174 +14,151 @@ import 'edit_student_status_dialog.dart';
 
 enum StudentStatus { absent, absentWithExcuse, present }
 
-class LecturePage extends StatefulWidget {
-  final Lecture lecture;
+class LecturePage extends StatelessWidget {
+  final String lectureId;
+  final String courseId;
   final CourseBloc courseBloc;
 
   static route({
-    @required Lecture lecture,
+    @required String lectureId,
+    @required String courseId,
     @required CourseBloc courseBloc,
   }) =>
       MaterialPageRoute(
         builder: (context) => BlocProvider.value(
           value: courseBloc,
           child: LecturePage(
-            lecture: lecture,
+            lectureId: lectureId,
+            courseId: courseId,
           ),
         ),
       );
 
   LecturePage({
-    this.lecture,
+    this.lectureId,
+    this.courseId,
     this.courseBloc,
   });
 
   @override
-  _LecturePageState createState() => _LecturePageState();
-}
-
-class _LecturePageState extends State<LecturePage> {
-  Lecture lecture;
-
-  @override
-  void initState() {
-    super.initState();
-    lecture = widget.lecture;
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: NestedScrollView(
-        // Setting floatHeaderSlivers to true is required in order to float
-        // the outer slivers over the inner scrollable.
-        floatHeaderSlivers: true,
-        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-          return <Widget>[
-            SliverAppBar(
-              automaticallyImplyLeading: false,
-              leading: BackButton(
-                color: Theme.of(context).primaryColor,
-              ),
-              title: Text(
-                lecture.name,
-                style: TextStyle(
-                  color: Theme.of(context).primaryColor,
-                ),
-              ),
-              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-              elevation: 0,
-              pinned: true,
-              forceElevated: innerBoxIsScrolled,
-              actions: [
-                IconButton(
-                  icon: Icon(
-                    Icons.qr_code,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                  onPressed: () async {
-                    await showPrimaryDialog(
-                      context: context,
-                      dialog: QRGenerateDialog(
-                        courseId: context.read<CourseBloc>().course.id,
-                        lectureId: lecture.id,
-                      ),
-                    );
-                  },
-                ),
-                LecturePopupMenu(
-                  lecture: lecture,
-                  popAfterDelete: true,
-                  onLectureUpdated: (lecture) {
-                    setState(() {
-                      this.lecture = lecture;
-                    });
-                  },
-                ),
-              ],
-            ),
-          ];
-        },
-        body: Builder(
-          builder: (context) {
-            final studentsIds =
-                context.select((CourseBloc cb) => cb.state.course.studentsIds);
-            return SingleChildScrollView(
-              child: Column(
-                children: [
-                  _buildDefaultDoughnutChart(studentsIds),
-                  Container(
-                    height: 56,
-                    alignment: AlignmentDirectional.centerStart,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 10,
-                      ),
-                      child: Text(
-                        S.of(context).studentsList,
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Theme.of(context).primaryColor,
-                          fontWeight: FontWeight.w500,
+      body: BlocBuilder<CourseBloc, CourseState>(
+        builder: (context, state) {
+          return StreamBuilder<Lecture>(
+            stream: FirestoreService.instance.lecture(lectureId, courseId),
+            builder: (context, snapshot) {
+              switch (snapshot.connectionState) {
+                case ConnectionState.none:
+                  return Container();
+                  break;
+                case ConnectionState.waiting:
+                  return Center(child: const CircularProgressIndicator());
+                  break;
+                default:
+                  return NestedScrollView(
+                    // Setting floatHeaderSlivers to true is required in order to float
+                    // the outer slivers over the inner scrollable.
+                    floatHeaderSlivers: true,
+                    headerSliverBuilder:
+                        (BuildContext context, bool innerBoxIsScrolled) {
+                      return <Widget>[
+                        SliverAppBar(
+                          automaticallyImplyLeading: false,
+                          leading: BackButton(
+                            color: Theme.of(context).primaryColor,
+                          ),
+                          title: Text(
+                            snapshot.data.name,
+                            style: TextStyle(
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          ),
+                          backgroundColor:
+                              Theme.of(context).scaffoldBackgroundColor,
+                          elevation: 0,
+                          pinned: true,
+                          forceElevated: innerBoxIsScrolled,
+                          actions: [
+                            IconButton(
+                              icon: Icon(
+                                Icons.qr_code,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                              onPressed: () async {
+                                await showPrimaryDialog(
+                                  context: context,
+                                  dialog: QRGenerateDialog(
+                                    courseId:
+                                        context.read<CourseBloc>().course.id,
+                                    lectureId: snapshot.data.id,
+                                  ),
+                                );
+                              },
+                            ),
+                            LecturePopupMenu(
+                              lecture: snapshot.data,
+                              popAfterDelete: true,
+                              onLectureUpdated: (lecture) {},
+                            ),
+                          ],
                         ),
-                      ),
-                    ),
-                  ),
-                  FutureBuilder<List<User>>(
-                    future: FirestoreService.instance.getUsers(studentsIds),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasError) {
-                        return _buildEmptyDisplay();
-                      } else if (snapshot.data == null) {
-                        return Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      } else if (snapshot.data.isEmpty) {
-                        return _buildEmptyDisplay();
-                      } else {
-                        return ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: snapshot.data.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            final student = snapshot.data[index];
-                            return StudentListItem(
-                              student: student,
-                              status: _getStatus(student.id),
-                              lecture: lecture,
-                            );
-                          },
-                        );
-                      }
+                      ];
                     },
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-
-  Widget _buildEmptyDisplay() {
-    return Container(
-      margin: EdgeInsets.symmetric(
-        vertical: 64,
-        horizontal: 64,
-      ),
-      alignment: Alignment.center,
-      child: Text(
-        S.of(context).thereAreNoStudentsStudyingThisCourse,
-        style: TextStyle(
-          color: Colors.black45,
-        ),
+                    body: Builder(
+                      builder: (context) {
+                        final students =
+                            context.select((CourseBloc cb) => cb.students);
+                        return SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              _buildDefaultDoughnutChart(
+                                context,
+                                students.map((e) => e.id).toList(),
+                                snapshot.data,
+                              ),
+                              Container(
+                                height: 56,
+                                alignment: AlignmentDirectional.centerStart,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 10,
+                                  ),
+                                  child: Text(
+                                    S.of(context).studentsList,
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: Theme.of(context).primaryColor,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ]..addAll(students
+                                .map((e) => StudentListItem(
+                                      student: e,
+                                      status: _getStatus(e.id, snapshot.data),
+                                      lecture: snapshot.data,
+                                    ))
+                                .toList()),
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                  break;
+              }
+            },
+          );
+        },
       ),
     );
   }
 
   /// Return the circular chart with default doughnut series.
-  Widget _buildDefaultDoughnutChart(List<String> studentsIds) {
+  Widget _buildDefaultDoughnutChart(
+      BuildContext context, List<String> studentsIds, Lecture lecture) {
     return Container(
       height: 150,
       width: double.infinity,
@@ -194,7 +171,7 @@ class _LecturePageState extends State<LecturePage> {
         title: ChartTitle(),
         legend:
             Legend(isVisible: true, overflowMode: LegendItemOverflowMode.wrap),
-        series: _getDefaultDoughnutSeries(studentsIds),
+        series: _getDefaultDoughnutSeries(context, studentsIds, lecture),
         tooltipBehavior: TooltipBehavior(enable: true),
       ),
     );
@@ -202,23 +179,25 @@ class _LecturePageState extends State<LecturePage> {
 
   /// Returns the doughnut series which need to be render.
   List<DoughnutSeries<ChartData, String>> _getDefaultDoughnutSeries(
-      List<String> studentsIds) {
+      BuildContext context, List<String> studentsIds, Lecture lecture) {
     final List<ChartData> chartData = <ChartData>[
       ChartData(
         x: S.of(context).presence,
         y: lecture.attendeesIds.length,
-        text: '${(lecture.attendeesIds.length / studentsIds.length) * 100}%',
+        text:
+            '${((lecture.attendeesIds.length / studentsIds.length) * 100).round()}%',
       ),
       ChartData(
         x: S.of(context).excused_absence,
         y: lecture.excusedAbsenteesIds.length,
         text:
-            '${(lecture.excusedAbsenteesIds.length / studentsIds.length) * 100}%',
+            '${((lecture.excusedAbsenteesIds.length / studentsIds.length) * 100).round()}%',
       ),
       ChartData(
         x: S.of(context).absence,
         y: lecture.absentIds.length,
-        text: '${(lecture.absentIds.length / studentsIds.length) * 100}%',
+        text:
+            '${((lecture.absentIds.length / studentsIds.length) * 100).round()}%',
       ),
     ];
     return <DoughnutSeries<ChartData, String>>[
@@ -234,13 +213,13 @@ class _LecturePageState extends State<LecturePage> {
     ];
   }
 
-  StudentStatus _getStatus(String id) {
-    if (lecture.absentIds.contains(id))
-      return StudentStatus.absent;
+  StudentStatus _getStatus(String id, Lecture lecture) {
+    if (lecture.attendeesIds.contains(id))
+      return StudentStatus.present;
     else if (lecture.excusedAbsenteesIds.contains(id))
       return StudentStatus.absentWithExcuse;
     else
-      return StudentStatus.present;
+      return StudentStatus.absent;
   }
 }
 
@@ -364,8 +343,10 @@ class StudentListItem extends StatelessWidget {
         return S.of(context).absent;
       case StudentStatus.absentWithExcuse:
         return S.of(context).absent_with_excuse;
-      default:
+      case StudentStatus.present:
         return S.of(context).present;
+      default:
+        return S.of(context).absent;
     }
   }
 

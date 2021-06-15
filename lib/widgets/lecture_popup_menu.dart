@@ -48,6 +48,7 @@ class LecturePopupMenu extends StatelessWidget {
           );
           onLectureUpdated(updatedLecture);
         } else {
+          if (popAfterDelete) Navigator.pop(context);
           await showPrimaryDialog(
             context: context,
             dialog: BlocProvider.value(
@@ -57,7 +58,6 @@ class LecturePopupMenu extends StatelessWidget {
               ),
             ),
           );
-          if (popAfterDelete) Navigator.pop(context);
         }
       },
       itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[

@@ -15,7 +15,7 @@ class Lecture extends LectureEntity {
     List<String> absentIds = const [],
     List<String> excusedAbsenteesIds = const [],
   }) : super(
-    id: id,
+          id: id,
           name: name,
           date: date,
           attendeesIds: attendeesIds,

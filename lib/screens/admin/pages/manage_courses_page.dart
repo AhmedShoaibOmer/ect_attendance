@@ -8,8 +8,8 @@ import 'package:paginate_firestore/paginate_firestore.dart';
 import '../../../generated/l10n.dart';
 import '../../../utilities/global.dart';
 import '../../screens.dart';
-import '../../teacher/pages/search_page.dart';
 import 'add_edit_course.dart';
+import 'admin_search_page.dart';
 
 class ManageCoursesPage extends StatelessWidget {
   @override
@@ -39,7 +39,7 @@ class ManageCoursesPage extends StatelessWidget {
                 onPressed: () {
                   showSearch(
                     context: context,
-                    delegate: SearchPage(),
+                    delegate: SearchPage(scope: 'courses'),
                   );
                 },
               ),
@@ -73,6 +73,8 @@ class ManageCoursesPage extends StatelessWidget {
               Course course = Course.fromJson(documentSnapshot.toJson);
               return CourseListItem(
                 course: course,
+                isAdmin: true,
+                onPressed: null,
                 /*               onPressed: () {
                   final bloc = BlocProvider.of<AdminBloc>(context);
 

@@ -36,6 +36,11 @@ Future<void> main() async {
     networkInfo: networkInfo,
   );
 
+  final DepartmentRepository departmentRepository = DepartmentRepositoryImpl(
+    firestoreService: firestoreService,
+    networkInfo: networkInfo,
+  );
+
   runApp(
     MultiRepositoryProvider(
       providers: [
@@ -47,7 +52,10 @@ Future<void> main() async {
         ),
         RepositoryProvider(
           create: (context) => userRepository,
-        )
+        ),
+        RepositoryProvider(
+          create: (context) => departmentRepository,
+        ),
       ],
       child: MultiBlocProvider(
         providers: [

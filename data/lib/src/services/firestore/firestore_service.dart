@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:domain/domain.dart';
 import 'package:meta/meta.dart';
 
+import '../../../data.dart';
 import '../../course/course.dart';
 import '../../lecture/lecture.dart';
 import '../../user/user.dart';
@@ -158,20 +159,6 @@ class FirestoreService {
         );
   }
 
-  Future<String> addCourse({
-    @required String courseName,
-    @required String semester,
-    @required String teacherId,
-  }) async {
-    String courseId;
-    await _coursesCollection.add(
-      {"name": courseName, "semester": semester, "teacherId": teacherId},
-    ).then((courseRef) async {
-      courseId = courseRef.id;
-    });
-    return courseId;
-  }
-
   Query getCoursesForTeacher(String teacherId) {
     return _coursesCollection.where(
       'teacherId',
@@ -183,28 +170,35 @@ class FirestoreService {
     return _coursesCollection;
   }
 
-  Future<void> updateCourse({
-    @required String courseId,
-    @required String name,
-    @required String semester,
-  }) async {
-    if (name != null)
-      await _coursesCollection
-          .doc(
-        courseId,
-      )
-          .update(
-        {"name": name},
-      );
+  Future<List<User>> getUsersForCourse(CourseEntity courseEntity) async {
+    List<User> users = [];
+    await _usersCollection
+        .where(
+          'departmentId',
+          isEqualTo: courseEntity.departmentId,
+        )
+        .where(
+          'semester',
+          isEqualTo: courseEntity.semester,
+        )
+        .get()
+        .then((value) {
+      value.docs.forEach((element) {
+        users.add(User.fromJson(element.toJson));
+      });
+    });
+    return users;
+  }
 
-    if (semester != null)
-      await _coursesCollection
-          .doc(
-        courseId,
-      )
-          .update(
-        {"semester": semester},
-      );
+  Future<void> addEditCourse({@required Course course}) async {
+    await _coursesCollection
+        .doc(
+          course.id.isEmpty ? null : course.id,
+        )
+        .set(
+          course.toJson(),
+          SetOptions(merge: true),
+        );
   }
 
   Future<void> deleteCourse(
@@ -228,6 +222,17 @@ class FirestoreService {
     return FirebaseFirestore.instance.collection(
       lecturesPath(courseId),
     );
+  }
+
+  Stream<Lecture> lecture(String lectureId, String courseId) {
+    return _lecturesCollection(courseId)
+        .doc(
+          lectureId,
+        )
+        .snapshots()
+        .map(
+          (event) => Lecture.fromJson(event.toJson),
+        );
   }
 
   Future<String> addNewLectureToCourse({
@@ -272,57 +277,59 @@ class FirestoreService {
   }
 
   Future<Lecture> submitAttendance({
-    @required String studentId,
+    @required UserEntity student,
     @required String courseId,
     @required String lectureId,
   }) async {
-    Lecture lecture;
-    await _lecturesCollection(courseId).doc(lectureId).update({
-      "attendeesIds": FieldValue.arrayUnion([studentId]),
-      "absentIds": FieldValue.arrayRemove([studentId]),
-      "excusedAbsenteesIds": FieldValue.arrayRemove([studentId]),
-    }).then((_) async {
-      await _lecturesCollection(courseId).doc(lectureId).get().then((value) {
-        lecture = Lecture.fromJson(value.toJson);
-      });
-    });
-    return lecture;
-  }
+    Course course;
 
-  Future<Lecture> submitAbsence({
-    @required String studentId,
-    @required String courseId,
-    @required String lectureId,
-  }) async {
-    Lecture lecture;
-    await _lecturesCollection(courseId).doc(lectureId).update({
-      "attendeesIds": FieldValue.arrayRemove([studentId]),
-      "absentIds": FieldValue.arrayUnion([studentId]),
-      "excusedAbsenteesIds": FieldValue.arrayRemove([studentId]),
-    }).then((_) async {
-      await _lecturesCollection(courseId).doc(lectureId).get().then((value) {
-        lecture = Lecture.fromJson(value.toJson);
-      });
-    });
-    return lecture;
-  }
+    await _coursesCollection
+        .doc(
+          courseId,
+        )
+        .get()
+        .then(
+          (event) => course = Course.fromJson(event.toJson),
+        );
 
-  Future<Lecture> submitExcusedAbsence({
-    @required String studentId,
-    @required String courseId,
-    @required String lectureId,
-  }) async {
-    Lecture lecture;
-    await _lecturesCollection(courseId).doc(lectureId).update({
-      "attendeesIds": FieldValue.arrayRemove([studentId]),
-      "absentIds": FieldValue.arrayRemove([studentId]),
-      "excusedAbsenteesIds": FieldValue.arrayUnion([studentId]),
-    }).then((_) async {
+    if (course.semester == student.semester &&
+        course.departmentId == student.departmentId) {
+      Lecture lecture;
+
       await _lecturesCollection(courseId).doc(lectureId).get().then((value) {
         lecture = Lecture.fromJson(value.toJson);
       });
-    });
-    return lecture;
+
+      List<String> absentIds = lecture.absentIds;
+      List<String> excusedAbsenteesIds = lecture.excusedAbsenteesIds;
+      List<String> attendeesIds = lecture.attendeesIds;
+
+      absentIds.removeWhere((element) {
+        return element == student.id;
+      });
+
+      excusedAbsenteesIds.removeWhere((element) {
+        return element == student.id;
+      });
+
+      attendeesIds.removeWhere((element) {
+        return element == student.id;
+      });
+
+      attendeesIds.add(student.id);
+
+      final newLecture = lecture.copyWith(
+        absentIds: absentIds,
+        attendeesIds: attendeesIds,
+        excusedAbsenteesIds: excusedAbsenteesIds,
+      );
+
+      await updateLecture(lecture: newLecture);
+
+      return lecture;
+    } else {
+      throw StudentNotAuthorizedException();
+    }
   }
 
   Query lecturesForCourse({
@@ -334,6 +341,34 @@ class FirestoreService {
   // **************************************************************************
   // Lecture related: END
   // **************************************************************************
+
+  CollectionReference _departmentsCollection =
+      FirebaseFirestore.instance.collection(departmentsPath);
+
+  Query getDepartments() {
+    return _departmentsCollection;
+  }
+
+  Future<void> addEditDepartment({@required Department department}) async {
+    await _departmentsCollection
+        .doc(
+          department.id.isEmpty ? null : department.id,
+        )
+        .set(
+          department.toJson(),
+          SetOptions(merge: true),
+        );
+  }
+
+  Future<void> deleteDepartment(
+    String departmentId,
+  ) async {
+    await _departmentsCollection
+        .doc(
+          departmentId,
+        )
+        .delete();
+  }
 
   void dispose() {
     _controller.close();

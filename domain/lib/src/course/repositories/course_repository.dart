@@ -10,17 +10,9 @@ import '../entities/course_entity.dart';
 abstract class CourseRepository {
   Stream<CourseEntity> course(String courseId);
 
-  /// Creates a new course .
-  /// returns the new course id.
-  Future<Either<Failure, String>> addCourse({
-    @required String name,
-    @required String semester,
-    @required String teacherId,
-  });
-
   Future<Either<Failure, void>> deleteCourse(String courseId);
 
-  Future<Either<Failure, void>> updateCourse(CourseEntity course);
+  Future<Either<Failure, void>> addEditCourse(CourseEntity course);
 
   Future<Either<Failure, ExcelFileEntity>> createAttendanceExcelFile({
     @required String fileName,

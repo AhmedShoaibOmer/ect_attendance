@@ -29,11 +29,30 @@ class _AddUsersState extends State<AddUsers> {
 
   bool isTeachers;
 
+  int semester;
+
+  String departmentId;
+
+  List<Department> departments = [];
+
   List<User> loadedUsers = [];
 
   @override
   void initState() {
     super.initState();
+
+    FirestoreService.instance.getDepartments().get().then(
+          (value) => setState(() {
+            departments.addAll(
+              value.docs
+                  .map(
+                    (e) => Department.fromJson(e.toJson),
+                  )
+                  .toList(),
+            );
+          }),
+        );
+
     textController = TextEditingController();
     isTeachers = widget.isTeachers;
   }
@@ -83,8 +102,18 @@ class _AddUsersState extends State<AddUsers> {
                   children: [
                     _buildSelectFileTF(),
                     SizedBox(
+                      height: 24,
+                    ),
+                    _buildDepartmentDropdown(),
+                    SizedBox(
                       height: 16,
                     ),
+                    !isTeachers ? _buildSemesterDropdown() : Container(),
+                    !isTeachers
+                        ? SizedBox(
+                            height: 16,
+                          )
+                        : Container(),
                     Divider(),
                     isLoading
                         ? Center(
@@ -157,6 +186,112 @@ class _AddUsersState extends State<AddUsers> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildDepartmentDropdown() {
+    return Padding(
+      padding: const EdgeInsets.only(
+        left: 16,
+        right: 16,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            S.of(context).department,
+            style: kLabelStyle.copyWith(color: Theme.of(context).primaryColor),
+          ),
+          SizedBox(height: 10.0),
+          Container(
+            alignment: Alignment.centerLeft,
+            decoration: kBoxDecorationStyle.copyWith(
+              color: Colors.white,
+            ),
+            height: 56.0,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: DropdownButton<String>(
+                value: departmentId,
+                icon: Icon(
+                  Icons.arrow_downward,
+                  color: Theme.of(context).primaryColor,
+                ),
+                iconSize: 24,
+                elevation: 16,
+                isExpanded: true,
+                style: TextStyle(
+                  color: Theme.of(context).primaryColor,
+                ),
+                onChanged: (String newValue) {
+                  setState(() {
+                    departmentId = newValue;
+                  });
+                },
+                items: departments
+                    .map(
+                      (e) => DropdownMenuItem<String>(
+                        value: e.id,
+                        child: Text(
+                          e.name.toUpperCase(),
+                        ),
+                      ),
+                    )
+                    .toList(),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSemesterDropdown() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          S.of(context).semester,
+          style: kLabelStyle,
+        ),
+        SizedBox(height: 10.0),
+        Container(
+          alignment: Alignment.centerLeft,
+          decoration: kBoxDecorationStyle.copyWith(
+            color: Colors.white,
+          ),
+          height: 56.0,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: DropdownButton<int>(
+              value: semester,
+              icon: Icon(
+                Icons.arrow_downward,
+                color: Theme.of(context).primaryColor,
+              ),
+              iconSize: 24,
+              elevation: 16,
+              isExpanded: true,
+              style: TextStyle(
+                color: Theme.of(context).primaryColor,
+              ),
+              onChanged: (int newValue) {
+                setState(() {
+                  semester = newValue;
+                });
+              },
+              items: List.generate(
+                  10,
+                  (index) => DropdownMenuItem<int>(
+                        value: index + 1,
+                        child: Text(
+                          (index + 1).toString(),
+                        ),
+                      )),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -233,10 +368,22 @@ class _AddUsersState extends State<AddUsers> {
   }
 
   void _onPressed(BuildContext context) {
-    if (loadedUsers.isNotEmpty) {
-      context.read<AdminBloc>().add(AddUsersEvent(loadedUsers));
+    if (loadedUsers.isNotEmpty &&
+        departmentId != null &&
+        departmentId.isNotEmpty) {
+      context.read<AdminBloc>().add(AddUsersEvent(
+            loadedUsers
+                .map((e) => e.copyWith(
+                      departmentId: departmentId,
+                    ))
+                .toList(),
+          ));
     } else {
-      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(S.of(context).all_fields_are_required),
+        ),
+      );
     }
   }
 }

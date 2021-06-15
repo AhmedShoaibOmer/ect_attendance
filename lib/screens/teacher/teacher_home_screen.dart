@@ -160,14 +160,6 @@ class CourseListItem extends StatelessWidget {
                                 ),
                           ),
                         ),
-                        Expanded(
-                          child: Text(
-                            '${course.studentsIds.length} ${S.of(context).students}',
-                            style: Theme.of(context).textTheme.caption.apply(
-                                  color: Theme.of(context).primaryColor,
-                                ),
-                          ),
-                        ),
                       ],
                     ),
                     SizedBox(

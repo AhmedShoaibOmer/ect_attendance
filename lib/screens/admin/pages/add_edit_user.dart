@@ -22,7 +22,11 @@ class _AddEditUserState extends State<AddEditUser> {
 
   String role;
 
+  String departmentId;
+
   String id;
+
+  int semester;
 
   bool isUpdating = false;
 
@@ -30,18 +34,37 @@ class _AddEditUserState extends State<AddEditUser> {
 
   User updatedUser;
 
+  List<Department> departments = [];
+
   @override
   void initState() {
     super.initState();
+
+    FirestoreService.instance.getDepartments().get().then(
+          (value) => setState(() {
+            departments.addAll(
+              value.docs
+                  .map(
+                    (e) => Department.fromJson(e.toJson),
+                  )
+                  .toList(),
+            );
+          }),
+        );
+
     if (widget.user != null) {
       isUpdating = true;
       name = widget.user.name;
+      departmentId = widget.user.departmentId;
       id = widget.user.id;
+      semester = widget.user.semester;
+      isTeacher = widget.user.isTeacher;
       role = widget.user.role;
     } else
       isTeacher = widget.addingTeacher;
 
     if (isTeacher) {
+      semester = 0;
       role = 'teacher';
     } else {
       role = 'student';
@@ -108,8 +131,12 @@ class _AddEditUserState extends State<AddEditUser> {
                     isUpdating ? Container() : _buildIdTF(),
                     SizedBox(height: 30.0),
                     _buildNameTF(),
+                    !isTeacher ? SizedBox(height: 30.0) : Container(),
+                    !isTeacher ? _buildSemesterDropdown() : Container(),
                     SizedBox(height: 30.0),
                     _buildTypeDropdown(),
+                    SizedBox(height: 30.0),
+                    _buildDepartmentDropdown(),
                     SizedBox(
                       height: 40.0,
                     ),
@@ -161,12 +188,20 @@ class _AddEditUserState extends State<AddEditUser> {
         role != null &&
         role.isNotEmpty &&
         id != null &&
-        id.isNotEmpty) {
+        id.isNotEmpty &&
+        departmentId != null &&
+        departmentId.isNotEmpty &&
+        semester != null) {
       if (isUpdating) {
-        if (widget.user.name != name || widget.user.role != role) {
+        if (widget.user.name != name ||
+            widget.user.role != role ||
+            widget.user.departmentId != departmentId ||
+            widget.user.semester != semester) {
           updatedUser = widget.user.copyWith(
             name: name,
             role: role,
+            semester: semester,
+            departmentId: departmentId,
           );
           context.read<AdminBloc>().add(
                 AddEditUserEvent(updatedUser),
@@ -175,7 +210,12 @@ class _AddEditUserState extends State<AddEditUser> {
           Navigator.pop(context);
         }
       } else {
-        final user = User(id: id, name: name, role: role);
+        final user = User(
+            id: id,
+            name: name,
+            role: role,
+            departmentId: departmentId,
+            semester: semester);
         context.read<AdminBloc>().add(
               AddEditUserEvent(user),
             );
@@ -208,6 +248,8 @@ class _AddEditUserState extends State<AddEditUser> {
             onChanged: (value) {
               id = value;
             },
+            keyboardType: TextInputType.number,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             style: TextStyle(
               color: Colors.black,
             ),
@@ -253,6 +295,55 @@ class _AddEditUserState extends State<AddEditUser> {
               contentPadding: EdgeInsetsDirectional.only(start: 14.0),
               hintText: S.of(context).enterTheFullUserName,
               hintStyle: kHintTextStyle.copyWith(color: Colors.black45),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSemesterDropdown() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          S.of(context).semester,
+          style: kLabelStyle,
+        ),
+        SizedBox(height: 10.0),
+        Container(
+          alignment: Alignment.centerLeft,
+          decoration: kBoxDecorationStyle.copyWith(
+            color: Colors.white,
+          ),
+          height: 56.0,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: DropdownButton<int>(
+              value: widget.addingTeacher == null ? semester : 1,
+              icon: Icon(
+                Icons.arrow_downward,
+                color: Theme.of(context).primaryColor,
+              ),
+              iconSize: 24,
+              elevation: 16,
+              isExpanded: true,
+              style: TextStyle(
+                color: Theme.of(context).primaryColor,
+              ),
+              onChanged: (int newValue) {
+                setState(() {
+                  semester = newValue;
+                });
+              },
+              items: List.generate(
+                  10,
+                  (index) => DropdownMenuItem<int>(
+                        value: index + 1,
+                        child: Text(
+                          (index + 1).toString(),
+                        ),
+                      )),
             ),
           ),
         ),
@@ -314,6 +405,57 @@ class _AddEditUserState extends State<AddEditUser> {
                   ),
                 ),
               ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDepartmentDropdown() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          S.of(context).department,
+          style: kLabelStyle,
+        ),
+        SizedBox(height: 10.0),
+        Container(
+          alignment: Alignment.centerLeft,
+          decoration: kBoxDecorationStyle.copyWith(
+            color: Colors.white,
+          ),
+          height: 56.0,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: DropdownButton<String>(
+              value: departmentId,
+              icon: Icon(
+                Icons.arrow_downward,
+                color: Theme.of(context).primaryColor,
+              ),
+              iconSize: 24,
+              elevation: 16,
+              isExpanded: true,
+              style: TextStyle(
+                color: Theme.of(context).primaryColor,
+              ),
+              onChanged: (String newValue) {
+                setState(() {
+                  departmentId = newValue;
+                });
+              },
+              items: departments
+                  .map(
+                    (e) => DropdownMenuItem<String>(
+                      value: e.id,
+                      child: Text(
+                        e.name.toUpperCase(),
+                      ),
+                    ),
+                  )
+                  .toList(),
             ),
           ),
         ),

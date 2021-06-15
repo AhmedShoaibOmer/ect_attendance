@@ -19,8 +19,7 @@ class LectureEntity extends Equatable {
   }) : assert(id != null && name != null);
 
   @override
-  List<Object> get props =>
-      [
+  List<Object> get props => [
         id,
         name,
         date,

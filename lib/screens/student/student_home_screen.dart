@@ -41,6 +41,13 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
               content: Text(S.of(context).no_connection_error),
             ),
           );
+        } else if (state is StudentNotAuthorizedState) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content:
+                  Text(S.of(context).youAreNotAllowedToSubmitAttendanceToAnyOf),
+            ),
+          );
         }
       }, builder: (context, state) {
         if (state is LoadingState) {
@@ -155,10 +162,10 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
   void _submitAttendance(String result) async {
     if (result == null || result.isEmpty) return;
 
-    String studentId = context.read<AuthenticationBloc>().state.user.id;
+    UserEntity student = context.read<AuthenticationBloc>().state.user;
 
     context.read<StudentBloc>().add(AttendanceRegistrationRequested(
-          studentId: studentId,
+          student: student,
           code: result,
         ));
   }

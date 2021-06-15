@@ -1,27 +1,21 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'user_model.dart';
+part of 'department_model.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-User _$UserFromJson(Map<String, dynamic> json) {
-  return User(
-    id: json['id'] as String,
+Department _$DepartmentFromJson(Map<String, dynamic> json) {
+  return Department(
     name: json['name'] as String,
-    role: json['role'] as String,
-    semester: json['semester'] as int,
-    departmentId: json['departmentId'] as String,
+    id: json['id'] as String,
   );
 }
 
-Map<String, dynamic> _$UserToJson(User instance) {
+Map<String, dynamic> _$DepartmentToJson(Department instance) {
   final val = <String, dynamic>{
     'name': instance.name,
-    'semester': instance.semester,
-    'role': instance.role,
-    'departmentId': instance.departmentId,
   };
 
   void writeNotNull(String key, dynamic value) {
@@ -30,6 +24,6 @@ Map<String, dynamic> _$UserToJson(User instance) {
     }
   }
 
-  writeNotNull('id', User.toNull(instance.id));
+  writeNotNull('id', Department.toNull(instance.id));
   return val;
 }

@@ -120,7 +120,8 @@ class _CoursePageState extends State<CoursePage> {
                               Navigator.push(
                                   context,
                                   LecturePage.route(
-                                      lecture: selectedResult,
+                                      lectureId: selectedResult.id,
+                                      courseId: state.course.id,
                                       courseBloc: BlocProvider.of(context)));
                             } else if (selectedResult is UserEntity) {
                               final result = await showPrimaryDialog(
@@ -149,76 +150,93 @@ class _CoursePageState extends State<CoursePage> {
                             }
                           },
                         ),
-                        PopupMenuButton<int>(
-                          icon: Icon(
-                            Icons.more_vert,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadiusDirectional.all(
-                              Radius.circular(10),
-                            ),
-                          ),
-                          onSelected: (int result) async {
-                            if (result == 0) {
-                              Navigator.push(
-                                context,
-                                AllLecturesStatsPage.route(
-                                  course: state.course,
-                                  lectures: lectures,
-                                ),
-                              );
-                            } else {
-                              _createExcelFile();
-                            }
+                        Builder(
+                          builder: (context) {
+                            bool hasStudents = context.select(
+                                (CourseBloc value) =>
+                                    value.students.isNotEmpty);
+                            return hasStudents
+                                ? PopupMenuButton<int>(
+                                    icon: Icon(
+                                      Icons.more_vert,
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadiusDirectional.all(
+                                        Radius.circular(10),
+                                      ),
+                                    ),
+                                    onSelected: (int result) async {
+                                      if (result == 0) {
+                                        Navigator.push(
+                                          context,
+                                          AllLecturesStatsPage.route(
+                                            course: state.course,
+                                            lectures: lectures,
+                                          ),
+                                        );
+                                      } else {
+                                        _createExcelFile();
+                                      }
+                                    },
+                                    itemBuilder: (BuildContext context) =>
+                                        <PopupMenuEntry<int>>[
+                                      PopupMenuItem<int>(
+                                        value: 0,
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              Icons.bar_chart,
+                                              color: Theme.of(context)
+                                                  .primaryColor,
+                                            ),
+                                            SizedBox(
+                                              width: 16,
+                                            ),
+                                            Expanded(
+                                              child: Text(
+                                                S
+                                                    .of(context)
+                                                    .all_lectures_stats,
+                                                style: TextStyle(
+                                                  color: Theme.of(context)
+                                                      .primaryColor,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      PopupMenuItem<int>(
+                                        value: 1,
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              Icons.list_alt,
+                                              color: Theme.of(context)
+                                                  .primaryColor,
+                                            ),
+                                            SizedBox(
+                                              width: 16,
+                                            ),
+                                            Expanded(
+                                              child: Text(
+                                                S
+                                                    .of(context)
+                                                    .all_students_stats,
+                                                style: TextStyle(
+                                                  color: Theme.of(context)
+                                                      .primaryColor,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : Container();
                           },
-                          itemBuilder: (BuildContext context) =>
-                              <PopupMenuEntry<int>>[
-                            PopupMenuItem<int>(
-                              value: 0,
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.bar_chart,
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                                  SizedBox(
-                                    width: 16,
-                                  ),
-                                  Expanded(
-                                    child: Text(
-                                      S.of(context).all_lectures_stats,
-                                      style: TextStyle(
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            PopupMenuItem<int>(
-                              value: 1,
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.list_alt,
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                                  SizedBox(
-                                    width: 16,
-                                  ),
-                                  Expanded(
-                                    child: Text(
-                                      S.of(context).all_students_stats,
-                                      style: TextStyle(
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
                         ),
                       ],
                       pinned: true,
@@ -260,7 +278,8 @@ class _CoursePageState extends State<CoursePage> {
                       onPressed: () => Navigator.push(
                           context,
                           LecturePage.route(
-                              lecture: lecture,
+                              lectureId: lecture.id,
+                              courseId: state.course.id,
                               courseBloc: BlocProvider.of(context))),
                     );
                   },

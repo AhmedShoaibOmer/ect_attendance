@@ -71,4 +71,8 @@ class UserRepositoryImpl extends UserRepository {
       return Left(NoConnectionFailure());
     }
   }
+
+  @override
+  Future<List<UserEntity>> getStudentsForCourse(CourseEntity courseEntity) =>
+      _firestoreService.getUsersForCourse(courseEntity);
 }

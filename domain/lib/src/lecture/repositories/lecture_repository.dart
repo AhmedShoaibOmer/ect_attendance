@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:meta/meta.dart';
 
+import '../../../domain.dart';
 import '../../core/core.dart';
 import '../entities/lecture_entity.dart';
 
@@ -25,7 +26,7 @@ abstract class LectureRepository {
   });
 
   Future<Either<Failure, LectureEntity>> registerAttendance({
-    @required String studentId,
+    @required UserEntity student,
     @required String code,
   });
 }

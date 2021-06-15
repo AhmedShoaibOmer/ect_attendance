@@ -202,11 +202,17 @@ class _EditStudentStatusDialogState extends State<EditStudentStatusDialog> {
     List<String> excusedAbsenteesIds = widget.lecture.excusedAbsenteesIds;
     List<String> attendeesIds = widget.lecture.attendeesIds;
 
-    absentIds.remove(widget.student.id);
+    absentIds.removeWhere((element) {
+      return element == widget.student.id;
+    });
 
-    excusedAbsenteesIds.remove(widget.student.id);
+    excusedAbsenteesIds.removeWhere((element) {
+      return element == widget.student.id;
+    });
 
-    attendeesIds.remove(widget.student.id);
+    attendeesIds.removeWhere((element) {
+      return element == widget.student.id;
+    });
 
     switch (selectedValue) {
       case StudentStatus.absent:
@@ -219,6 +225,7 @@ class _EditStudentStatusDialogState extends State<EditStudentStatusDialog> {
         attendeesIds.add(widget.student.id);
         break;
     }
+
     final lecture = widget.lecture.copyWith(
       absentIds: absentIds,
       attendeesIds: attendeesIds,

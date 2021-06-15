@@ -20,4 +20,6 @@ class AttendanceRegisteredState extends StudentState {
 
 class AttendanceRegistrationFailedState extends StudentState {}
 
+class StudentNotAuthorizedState extends StudentState {}
+
 class NoNetworkConnectionState extends StudentState {}

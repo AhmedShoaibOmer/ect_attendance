@@ -17,29 +17,6 @@ class CourseRepositoryImpl extends CourseRepository {
         this._networkInfo = networkInfo;
 
   @override
-  Future<Either<Failure, String>> addCourse(
-      {String name, String semester, String teacherId}) async {
-    if (await _networkInfo.isConnected) {
-      try {
-        String courseId;
-        await _firestoreService
-            .addCourse(
-              courseName: name,
-              teacherId: teacherId,
-              semester: semester,
-            )
-            .then((value) => courseId = value);
-        return Right(courseId);
-      } catch (e) {
-        print(e);
-        return Left(CourseCreateFailure());
-      }
-    } else {
-      return Left(NoConnectionFailure());
-    }
-  }
-
-  @override
   Future<Either<Failure, void>> deleteCourse(String courseId) async {
     if (await _networkInfo.isConnected) {
       try {
@@ -55,18 +32,14 @@ class CourseRepositoryImpl extends CourseRepository {
   }
 
   @override
-  Future<Either<Failure, void>> updateCourse(CourseEntity course) async {
+  Future<Either<Failure, void>> addEditCourse(CourseEntity course) async {
     if (await _networkInfo.isConnected) {
       try {
-        await _firestoreService.updateCourse(
-          courseId: course.id,
-          name: course.name,
-          semester: course.semester,
-        );
+        await _firestoreService.addEditCourse(course: course);
         return Right(() {});
       } catch (e) {
         print(e);
-        return Left(CourseUpdateFailure());
+        return Left(CourseAddEditFailure());
       }
     } else {
       return Left(NoConnectionFailure());

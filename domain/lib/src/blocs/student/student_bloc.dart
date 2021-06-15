@@ -4,7 +4,6 @@ import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
 part 'student_event.dart';
-
 part 'student_state.dart';
 
 class StudentBloc extends Bloc<StudentEvent, StudentState> {
@@ -29,12 +28,14 @@ class StudentBloc extends Bloc<StudentEvent, StudentState> {
       yield AttendanceRegistrationFailedState();
     } else {
       final response = await _lectureRepository.registerAttendance(
-        studentId: event.studentId,
+        student: event.student,
         code: event.code,
       );
       yield* response.fold((l) async* {
         if (l is NoConnectionFailure) {
           yield NoNetworkConnectionState();
+        } else if (l is StudentNotAuthorizedFailure) {
+          yield StudentNotAuthorizedState();
         } else {
           yield AttendanceRegistrationFailedState();
         }
