@@ -89,6 +89,7 @@ class LectureRepositoryImpl extends LectureRepository {
     String code,
   }) async {
     try {
+      print('Qr data: $code');
       final data = code.split("/");
       if (data.isEmpty) throw Exception('No ids detected.');
       String courseId = data[0];

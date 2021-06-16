@@ -324,7 +324,7 @@ class FirestoreService {
         excusedAbsenteesIds: excusedAbsenteesIds,
       );
 
-      await updateLecture(lecture: newLecture);
+      await updateLecture(lecture: newLecture, courseId: courseId);
 
       return lecture;
     } else {

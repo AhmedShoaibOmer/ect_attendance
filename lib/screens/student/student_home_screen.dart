@@ -115,7 +115,7 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
   _showFailureDialog(BuildContext context) {
     AlertDialog alert = AlertDialog(
       title: Text(
-        S.of(context).operation_succeeded,
+        S.of(context).operation_failed,
         style: TextStyle(color: Theme.of(context).primaryColor),
       ),
       content: new Row(

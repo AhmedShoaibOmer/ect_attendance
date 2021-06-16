@@ -49,8 +49,7 @@ class UserEntity extends Equatable {
   bool get isTeacher => this.role == UserEntity.Teacher;
 
   @override
-  List<Object> get props =>
-      [
+  List<Object> get props => [
         id,
         name,
         role,

@@ -14,7 +14,7 @@ class User extends UserEntity {
     int semester,
     String departmentId,
   }) : super(
-    name: name,
+          name: name,
           role: role,
           semester: semester,
           id: id,

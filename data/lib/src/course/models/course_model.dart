@@ -13,7 +13,7 @@ class Course extends CourseEntity {
     @required String teacherId,
     @required String departmentId,
   }) : super(
-    id: id,
+          id: id,
           name: name,
           semester: semester,
           teacherId: teacherId,
